@@ -1,6 +1,7 @@
 package user;
 
 import java.sql.ResultSet;
+import user.dbQueries;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -38,9 +39,9 @@ public class runner {
 		Statement stmt = DB.stmt;	  
 	    ResultSet rs;
 			try {
-String query = "SELECT username, password FROM users WHERE username = \""+x+"\" AND password = \""+y+"\";";
-			rs = stmt.executeQuery(query);
-			if(!rs.next()){
+				dbQueries yup = new dbQueries();
+			rs = stmt.executeQuery(yup.checkUser(x, y));
+			if(!rs.isBeforeFirst()){
 				System.out.println("Unauthorised Access");
 			}
 		
@@ -63,11 +64,10 @@ String query = "SELECT username, password FROM users WHERE username = \""+x+"\" 
  public void createUser(String x, String y){
 	 databaseHelper DB = new databaseHelper();
 		Statement stmt = DB.stmt;
-	  
 	    ResultSet rs;
 			try {
-				String query = "INSERT INTO users VALUES(\""+x+"\",\""+y+"\");";
-				stmt.executeUpdate(query);		
+				dbQueries yup = new dbQueries();
+				stmt.executeUpdate(yup.createUser(x, y));		
 		        System.out.println("Signed up, Welcome, "+x);
 			} catch (SQLException e) {
 				System.out.println("User already exists");
@@ -81,11 +81,42 @@ String query = "SELECT username, password FROM users WHERE username = \""+x+"\" 
 		 Scanner answer = new Scanner(System.in);
 		 String theAnswer = answer.nextLine();
 		 if(theAnswer.equals("U") || theAnswer.equals("u")){
-			 
+			 System.out.println("Please enter the username for the user you want to unlock");
+
 		 } else if (theAnswer.equals("L") || theAnswer.equals("l")){
-			 
+			 System.out.println("Please enter the username for the user you want to lock");
+			 String lockUser = answer.nextLine();
+				 databaseHelper DB = new databaseHelper();
+					Statement stmt = DB.stmt;
+				    ResultSet rs;
+						try {
+							dbQueries yup = new dbQueries();
+							rs = stmt.executeQuery(yup.checkLocked(lockUser));
+							users.clear();
+							while (rs.next()) {
+					            String username = rs.getString("username");
+					            String password = rs.getString("password");
+					            if(username != ""){
+					            	
+					            	System.out.println("Are you sure you want to lock this user, "+username+"? (Y/N)" );
+					            	String adminLock = answer.nextLine();
+					            	if(adminLock.equals("Y")||adminLock.equals("y")){
+					            		System.out.println(username);
+					            		stmt.executeUpdate(yup.lockUser(username));
+					            		System.out.println("Locked");
+					            	}
+					            }
+					            userObject temp = new userObject(username, password);			            
+					            users.add(temp);
+					            
+					        }
+							System.out.println(users);
+						} catch (SQLException e) {
+							System.out.println(e);
+							
+						}
+
 		 }
-		 System.out.println("Please enter the username for the user you want to lock");
 	 }
  }
 	public void logOn(){
