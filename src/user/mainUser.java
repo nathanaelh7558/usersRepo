@@ -16,7 +16,7 @@ public class mainUser {
  
 	public static void main(String[] args) {
 	runner YES = new runner();
-	YES.doDBstuff();
+	YES.logOn();
 	}
 	
 	
