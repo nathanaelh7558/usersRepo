@@ -106,9 +106,7 @@ public class runner {
 
 		}
 	}
-	public void checkAdmin(String x, String y){
-		if (getAdmin(x,y)){
-			System.out.println("Welcome Admin");
+	public void checkAdmin(){
 			System.out.println("Would you like to lock or unlock a users account? (L/U)");
 			Scanner answer = new Scanner(System.in);
 			String theAnswer = answer.nextLine();
@@ -124,6 +122,7 @@ public class runner {
 					rs = pstmt.executeQuery();
 					if(!rs.isBeforeFirst()){
 						System.out.println("Unable to unlock user");
+						checkAdmin();
 					}
 					while (rs.next()) {
 						String username = rs.getString("username");
@@ -137,6 +136,7 @@ public class runner {
 								pstmt.setString(1, username);
 								pstmt.executeUpdate();
 								System.out.println("Unlocked");
+								checkAdmin();
 							}
 						}
 					}
@@ -169,6 +169,7 @@ public class runner {
 								pstmt.setString(1, username);
 								pstmt.executeUpdate();
 								System.out.println("Locked");
+								checkAdmin();
 							}
 						}
 					}
@@ -177,8 +178,9 @@ public class runner {
 
 				}
 
+			} else{
+				checkAdmin();
 			}
-		}
 	}
 	public void updateTime(userObject x){
 		dbQueries yup = new dbQueries();
@@ -211,21 +213,28 @@ public class runner {
 					System.out.println("User succesfully created!");
 					if(checkUser(theUsername, thePassword)){
 						System.out.println("Welcome, "+theUsername);
+						logOn();
 					}
 				} else {
 					System.out.println("Error, user not created");
+					logOn();
 				}
 			} else {
 				System.out.println("Invalid credentials, please try again");
+				logOn();
 			}
 		} else if(theAnswer.equals("L") || theAnswer.equals("l")) {
 			System.out.println("Welcome to log-in");
-			System.out.println("Please enter a Username");
+			System.out.println("1. Please enter a Username");
+			System.out.println("2. Please enter a Username");
+			System.out.println("3. Please enter a Username");
+
 			String theUsername = answer.nextLine();
 			System.out.println("Please enter a Password");
 			String thePassword = answer.nextLine();
 			if(checkUser(theUsername, thePassword)){
 				System.out.println("Welcome, "+theUsername);
+				logOn();
 			}
 
 		}
@@ -235,8 +244,13 @@ public class runner {
 			String theUsername = answer.nextLine();
 			System.out.println("Please enter a Password");
 			String thePassword = answer.nextLine();
-			checkAdmin(theUsername, thePassword);
-
+			if(getAdmin(theUsername, thePassword)){
+				System.out.println("Welcome Admin");
+				checkAdmin();
+			}
+			
+		} else{
+			logOn();
 		}
 	}
 }
